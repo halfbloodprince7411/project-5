@@ -27,7 +27,7 @@ jobs:
         run: terraform init
 
       - name: 📦 Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -input=false
 
       - name: ✅ Manual Approval
         if: github.event_name == 'workflow_dispatch'
