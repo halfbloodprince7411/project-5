@@ -17,6 +17,7 @@ pipeline {
 
         stage('Init') {
             steps {
+                sh 'echo "shell is working"''
                 sh 'terraform init'
             }
         }
