@@ -8,7 +8,18 @@ pipeline {
     ARM_SUBSCRIPTION_ID = credentials('jenkins-subscription-id')
   }
 
+  parameters {
+    booleanParam(name: 'APPROVE_CHANGES', defaultValue: false, description: 'Require manual approval before Apply')
+    booleanParam(name: 'AUTO_APPLY', defaultValue: false, description: 'Auto-apply infrastructure changes')
+  }
+
   stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
     stage('Init') {
       steps {
         dir('terraform') {
@@ -31,9 +42,19 @@ pipeline {
       }
     }
 
+    stage('Approval') {
+      when {
+        beforeAgent true
+        expression { return params.APPROVE_CHANGES }
+      }
+      steps {
+        input message: "Apply the planned infrastructure changes?", ok: "Deploy"
+      }
+    }
+
     stage('Apply') {
       when {
-        expression { return params.AUTO_APPLY == true }
+        expression { return params.AUTO_APPLY || params.APPROVE_CHANGES }
       }
       steps {
         dir('terraform') {
@@ -41,9 +62,19 @@ pipeline {
         }
       }
     }
+
+    stage('Cleanup') {
+      steps {
+        dir('terraform') {
+          sh 'rm -f terraform.tfvars'
+        }
+      }
+    }
   }
 
-  parameters {
-    booleanParam(name: 'AUTO_APPLY', defaultValue: false, description: 'Apply changes automatically')
+  post {
+    always {
+      echo "Build completed: ${currentBuild.currentResult}"
+    }
   }
 }
