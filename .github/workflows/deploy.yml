@@ -26,11 +26,6 @@ jobs:
       - name: 🧪 Terraform Init
         run: terraform init
 
-      - name: Import if not already in state
-        run: |
-          terraform state list | grep -q azurerm_resource_group.rg || \
-          terraform import azurerm_resource_group.rg "/subscriptions/ce181674-2911-4a50-87eb-159ff2af3318/resourceGroups/rg-severussnape"
-
       - name: 📦 Terraform Plan
         run: |
             terraform plan -out=tfplan -input=false \
