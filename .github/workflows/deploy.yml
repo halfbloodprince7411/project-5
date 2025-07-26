@@ -27,7 +27,12 @@ jobs:
         run: terraform init
 
       - name: 📦 Terraform Plan
-        run: terraform plan -out=tfplan -input=false
+        run: |
+            terraform plan -out=tfplan -input=false \
+            -var="client_id=${{ secrets.JENKINS_CLIENT_ID }}" \
+            -var="client_secret=${{ secrets.JENKINS_SECRET }}" \
+            -var="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
       - name: ✅ Manual Approval
         if: github.event_name == 'workflow_dispatch'
