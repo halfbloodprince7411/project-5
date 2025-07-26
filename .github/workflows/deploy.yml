@@ -1,0 +1,37 @@
+name: Deploy Terraform Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.JENKINS_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.JENKINS_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🧰 Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: 🧪 Terraform Init
+        run: terraform init
+
+      - name: 📦 Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: ✅ Manual Approval
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Manual trigger approved — applying plan"
+
+      - name: 🚀 Terraform Apply
+        run: terraform apply tfplan
