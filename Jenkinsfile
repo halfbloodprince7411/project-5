@@ -15,6 +15,12 @@ pipeline {
             }
         }
 
+        stage('Shell Test') {
+            steps {
+                sh 'echo "Shell is alive and working!"'
+            }
+        }
+
         stage('Init') {
             steps {
                 sh 'echo "shell is working"'
