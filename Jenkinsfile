@@ -21,12 +21,11 @@ pipeline {
     }
 
     stage('Init') {
-      steps {
-        dir('terraform') {
-          sh 'terraform init'
-        }
-      }
-    }
+  steps {
+    sh 'terraform init'
+  }
+}
+
 
     stage('Plan') {
       steps {
