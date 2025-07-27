@@ -1,10 +1,16 @@
-variable "client_id" {}
-variable "client_secret" {}
-variable "tenant_id" {}
-variable "subscription_id" {}
+variable "client_id" {
+  description = "Azure Client ID for Service Principal"
+}
 
-# 🔑 Public SSH key injected via CI
-variable "vm_public_key" {
-  type        = string
-  description = "The SSH public key for the VM admin user"
+variable "client_secret" {
+  description = "Azure Client Secret for Service Principal"
+  sensitive   = true
+}
+
+variable "tenant_id" {
+  description = "Azure Tenant ID"
+}
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
 }
