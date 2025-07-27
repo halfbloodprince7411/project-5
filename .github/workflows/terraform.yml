@@ -51,6 +51,10 @@ jobs:
         working-directory: envs/${{ matrix.env }}
         run: ls -la
 
+      - name: Check terraform.tfvars contents
+        working-directory: envs/${{ matrix.env }}
+        run: cat terraform.tfvars
+
 
       - name: Terraform Plan (without var-file)
         working-directory: envs/${{ matrix.env }}
