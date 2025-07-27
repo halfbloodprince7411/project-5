@@ -28,7 +28,7 @@ jobs:
 
       # Create terraform.tfvars dynamically for non-sensitive vars
       - name: Create terraform.tfvars
-        working-directory: envs/${{ matrix.env }}
+        working-directory: .
         run: |
           mkdir -p .
 
@@ -58,15 +58,15 @@ jobs:
           EOF
 
       - name: Terraform Init
-        working-directory: envs/${{ matrix.env }}
+        working-directory: .
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: envs/${{ matrix.env }}
+        working-directory: .
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: envs/${{ matrix.env }}
+        working-directory: .
         run: |
           terraform plan -var-file="terraform.tfvars" -out=tfplan \
             -var="client_id=$ARM_CLIENT_ID" \
@@ -77,5 +77,5 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        working-directory: envs/${{ matrix.env }}
+        working-directory: .
         run: terraform apply -auto-approve tfplan
