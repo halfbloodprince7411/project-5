@@ -33,13 +33,17 @@ jobs:
           if [ "${{ matrix.env }}" = "dev" ]; then
             LOCATION="West US"
             ADDRESS_SPACE='["10.0.0.0/16"]'
+            SUBNET_ADDRESS_PREFIXES='["10.0.1.0/24"]'
           elif [ "${{ matrix.env }}" = "test" ]; then
             LOCATION="East US"
             ADDRESS_SPACE='["10.1.0.0/16"]'
+            SUBNET_ADDRESS_PREFIXES='["10.1.1.0/24"]'
           elif [ "${{ matrix.env }}" = "prod" ]; then
             LOCATION="Central US"
             ADDRESS_SPACE='["10.1.0.0/16"]'
+            SUBNET_ADDRESS_PREFIXES='["10.1.1.0/24"]'
           fi
+
 
           RESOURCE_GROUP="${{ matrix.env }}-resource-group"
 
@@ -48,6 +52,7 @@ jobs:
           vnet_name           = "${{ matrix.env }}-vnet"
           location            = "$LOCATION"
           address_space       = $ADDRESS_SPACE
+          subnet_address_prefixes = $SUBNET_ADDRESS_PREFIXES
           resource_group_name = "$RESOURCE_GROUP"
           EOF
 

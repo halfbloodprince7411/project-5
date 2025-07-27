@@ -30,7 +30,7 @@ resource "azurerm_subnet" "subnet" {
   name                 = "subnet-${random_pet.name.id}-${var.environment}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = module.vnet.vnet_name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = var.subnet_address_prefixes
 }
 
 resource "azurerm_public_ip" "public_ip" {

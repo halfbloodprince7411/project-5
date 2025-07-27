@@ -13,14 +13,19 @@ variable "location" {
   description = "Azure region"
 }
 
-# variable "resource_group_name" {
-#   type        = string
-#   description = "Resource group for the environment"
-# }
+variable "resource_group_name" {
+  type        = string
+  description = "Resource group for the environment"
+}
 
 variable "address_space" {
   type        = list(string)
   description = "Address space for the VNet"
+}
+
+variable "subnet_address_prefixes" {
+  description = "Address prefixes for the subnet"
+  type        = list(string)
 }
 
 variable "vm_public_key" {
