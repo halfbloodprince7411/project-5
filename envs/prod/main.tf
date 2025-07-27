@@ -8,6 +8,16 @@ provider "azurerm" {
   use_cli         = false
 }
 
+resource "random_pet" "name" {
+  length    = 2
+  separator = "-"
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "rg-death-eaters-${random_pet.name.id}"
+  location = var.location
+}
+
 # Use the vnet module
 module "vnet" {
   source              = "../../modules/vnet"

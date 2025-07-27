@@ -9,16 +9,16 @@ provider "azurerm" {
 }
 
 # 🐾 Generate spooky pet-style names
-resource "random_pet" "name" {
-  length    = 2
-  separator = "-"
-}
+# resource "random_pet" "name" {
+#   length    = 2
+#   separator = "-"
+# }
 
-# ☠️ Resource Group
-resource "azurerm_resource_group" "rg" {
-  name     = "rg-death-eaters-${random_pet.name.id}"
-  location = "West US"
-}
+# # ☠️ Resource Group
+# resource "azurerm_resource_group" "rg" {
+#   name     = "rg-death-eaters-${random_pet.name.id}"
+#   location = "West US"
+# }
 
 # 🌐 Virtual Network
 resource "azurerm_virtual_network" "vnet" {
