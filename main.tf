@@ -68,7 +68,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_username      = "ubuntu"
   admin_ssh_key {
     username   = "ubuntu"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.vm_public_key
   }
 
   network_interface_ids = [azurerm_network_interface.nic.id]
