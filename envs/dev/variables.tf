@@ -13,10 +13,10 @@ variable "location" {
   description = "Azure region"
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Resource group for the environment"
-}
+# variable "resource_group_name" {
+#   type        = string
+#   description = "Resource group for the environment"
+# }
 
 variable "address_space" {
   type        = list(string)
