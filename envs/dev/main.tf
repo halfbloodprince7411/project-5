@@ -18,8 +18,6 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-
-# Use the vnet module
 module "vnet" {
   source              = "../../modules/vnet"
   name                = "${var.vnet_name}-${random_pet.name.id}-${var.environment}"
@@ -28,10 +26,64 @@ module "vnet" {
   address_space       = var.address_space
 }
 
-# Example: Subnet using vnet module output
 resource "azurerm_subnet" "subnet" {
   name                 = "subnet-${random_pet.name.id}-${var.environment}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = module.vnet.vnet_name
   address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_public_ip" "public_ip" {
+  name                = "pip-${random_pet.name.id}-${var.environment}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Dynamic"
+  sku                 = "Basic"
+}
+
+resource "azurerm_network_interface" "nic" {
+  name                = "nic-${random_pet.name.id}-${var.environment}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "ipconfig"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "vm" {
+  name                = "vm-${random_pet.name.id}-${var.environment}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+  size                = "Standard_B1s"
+
+  admin_username      = "ubuntu"
+  admin_ssh_key {
+    username   = "ubuntu"
+    public_key = var.vm_public_key
+  }
+
+  network_interface_ids = [azurerm_network_interface.nic.id]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts-gen2"
+    version   = "22.04.202212010"
+  }
+
+  tags = {
+    environment = var.environment
+    owner       = "sirisha"
+    cost        = "minimal"
+    name        = random_pet.name.id
+  }
 }
