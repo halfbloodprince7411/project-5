@@ -14,7 +14,7 @@ resource "random_pet" "name" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-death-eaters-${random_pet.name.id}"
+  name     = "rg-death-eaters-${random_pet.name.id}-${var.environment}"
   location = var.location
 }
 
@@ -22,7 +22,7 @@ resource "azurerm_resource_group" "rg" {
 # Use the vnet module
 module "vnet" {
   source              = "../../modules/vnet"
-  name                = var.vnet_name
+  name                = "${var.vnet_name}-${random_pet.name.id}-${var.environment}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = var.address_space
@@ -30,7 +30,7 @@ module "vnet" {
 
 # Example: Subnet using vnet module output
 resource "azurerm_subnet" "subnet" {
-  name                 = "subnet-${module.vnet.vnet_name}"
+  name                 = "subnet-${random_pet.name.id}-${var.environment}"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = module.vnet.vnet_name
   address_prefixes     = ["10.0.1.0/24"]

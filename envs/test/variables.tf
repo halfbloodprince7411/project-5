@@ -13,10 +13,10 @@ variable "location" {
   description = "Azure region"
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Resource group for the environment"
-}
+# variable "resource_group_name" {
+#   type        = string
+#   description = "Resource group for the environment"
+# }
 
 variable "address_space" {
   type        = list(string)
@@ -27,3 +27,10 @@ variable "vm_public_key" {
   type        = string
   description = "The SSH public key for the VM admin user"
 }
+
+variable "environment" {
+  type        = string
+  description = "Deployment environment name (e.g., dev, test, prod)"
+  default = "test"  # Optional default value, can be removed if not needed
+}
+

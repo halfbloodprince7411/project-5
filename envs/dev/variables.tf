@@ -27,3 +27,10 @@ variable "vm_public_key" {
   type        = string
   description = "The SSH public key for the VM admin user"
 }
+
+variable "environment" {
+  type        = string
+  description = "Deployment environment name (e.g., dev, test, prod)"
+  default = "dev"  # Optional default value, can be removed if not needed
+}
+
