@@ -22,3 +22,8 @@ variable "address_space" {
   type        = list(string)
   description = "Address space for the VNet"
 }
+
+variable "vm_public_key" {
+  type        = string
+  description = "The SSH public key for the VM admin user"
+}
