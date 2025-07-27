@@ -37,7 +37,7 @@ jobs:
 
       - name: Terraform Plan
         run: |
-          terraform plan -out=tfplan \
+          terraform plan -var-file="terraform.tfvars" -out=tfplan \
             -var="client_id=$ARM_CLIENT_ID" \
             -var="client_secret=$ARM_CLIENT_SECRET" \
             -var="tenant_id=$ARM_TENANT_ID" \
