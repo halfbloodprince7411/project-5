@@ -1,40 +1,49 @@
-name: Terraform Deploy
+name: Terraform Deployment
 
 on:
   push:
     branches:
       - main
 
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
+
 jobs:
-  terraform:
-    name: 'Terraform Apply'
+  deploy:
     runs-on: ubuntu-latest
 
-    env:
-        ARM_CLIENT_ID: ${{ secrets.JENKINS_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.JENKINS_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
-
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Debug SSH Key
+        run: |
+            echo "Public key begins with:"
+            echo "$PUBLIC_SSH_KEY" | cut -c1-40
+
+
       - name: Terraform Plan
         run: |
-            terraform plan -out=tfplan \
+          terraform plan -out=tfplan \
             -var="client_id=$ARM_CLIENT_ID" \
             -var="client_secret=$ARM_CLIENT_SECRET" \
             -var="tenant_id=$ARM_TENANT_ID" \
-            -var="subscription_id=$ARM_SUBSCRIPTION_ID"
+            -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
             -var="vm_public_key=$PUBLIC_SSH_KEY"
 
       - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
