@@ -14,7 +14,7 @@ resource "random_pet" "name" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-serius-black-${random_pet.name.id}-${var.environment}"
+  name     = "rg-death-eater-${random_pet.name.id}-${var.environment}"
   location = var.location
 }
 
