@@ -30,12 +30,27 @@ jobs:
       - name: Create terraform.tfvars
         working-directory: envs/${{ matrix.env }}
         run: |
+          if [ "${{ matrix.env }}" = "dev" ]; then
+            LOCATION="West US"
+            ADDRESS_SPACE='["10.0.0.0/16"]'
+          elif [ "${{ matrix.env }}" = "test" ]; then
+            LOCATION="East US"
+            ADDRESS_SPACE='["10.1.0.0/16"]'
+          elif [ "${{ matrix.env }}" = "prod" ]; then
+            LOCATION="Central US"
+            ADDRESS_SPACE='["10.1.0.0/16"]'
+          fi
+
+          RESOURCE_GROUP="${{ matrix.env }}-resource-group"
+
           cat > terraform.tfvars <<EOF
+          environment         = "${{ matrix.env }}"
           vnet_name           = "${{ matrix.env }}-vnet"
-          location            = "West US"
-          resource_group_name = "${{ matrix.env }}-resource-group"
-          address_space       = ["10.0.0.0/16"]
+          location            = "$LOCATION"
+          address_space       = $ADDRESS_SPACE
+          resource_group_name = "$RESOURCE_GROUP"
           EOF
+
 
       - name: Terraform Init
         working-directory: envs/${{ matrix.env }}
