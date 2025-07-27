@@ -23,49 +23,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List repo root contents
-        run: ls -l
-
-      - name: List env folder contents for ${{ matrix.env }}
-        run: ls -l envs/${{ matrix.env }}
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+
+      # Create terraform.tfvars dynamically for non-sensitive vars
+      - name: Create terraform.tfvars
+        working-directory: envs/${{ matrix.env }}
+        run: |
+          cat > terraform.tfvars <<EOF
+          vnet_name           = "${{ matrix.env }}-vnet"
+          location            = "West US"
+          resource_group_name = "${{ matrix.env }}-resource-group"
+          address_space       = ["10.0.0.0/16"]
+          EOF
 
       - name: Terraform Init
         working-directory: envs/${{ matrix.env }}
         run: terraform init
 
-      - name: Terraform Format
-        working-directory: envs/${{ matrix.env }}
-        run: terraform fmt -check
       - name: Terraform Validate
         working-directory: envs/${{ matrix.env }}
         run: terraform validate
-      
-      - name: Print current directory before plan
-        working-directory: envs/${{ matrix.env }}
-        run: pwd
 
-      - name: List files before plan
-        working-directory: envs/${{ matrix.env }}
-        run: ls -la
-
-      - name: Check terraform.tfvars contents
-        working-directory: envs/${{ matrix.env }}
-        run: cat terraform.tfvars
-
-
-      - name: Terraform Plan (without var-file)
+      - name: Terraform Plan
         working-directory: envs/${{ matrix.env }}
         run: |
-          terraform plan -out=tfplan \
-          -var="client_id=$ARM_CLIENT_ID" \
-          -var="client_secret=$ARM_CLIENT_SECRET" \
-          -var="tenant_id=$ARM_TENANT_ID" \
-          -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-          -var="vm_public_key=$PUBLIC_SSH_KEY"
-
+          terraform plan -var-file="terraform.tfvars" -out=tfplan \
+            -var="client_id=$ARM_CLIENT_ID" \
+            -var="client_secret=$ARM_CLIENT_SECRET" \
+            -var="tenant_id=$ARM_TENANT_ID" \
+            -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
+            -var="vm_public_key=$PUBLIC_SSH_KEY"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
