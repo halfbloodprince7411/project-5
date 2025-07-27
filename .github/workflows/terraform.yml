@@ -18,10 +18,11 @@ jobs:
     strategy:
       matrix:
         env: [dev, test, prod]
+
     defaults:
       run:
         working-directory: ./envs/${{ matrix.env }}
-        
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
