@@ -17,8 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [dev, test, prod]
-
+        env: [dev, test, prod]
+    defaults:
+      run:
+        working-directory: ./envs/${{ matrix.env }}
+        
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,34 +29,21 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Debug SSH Key
-        run: |
-          echo "Public key begins with:"
-          echo "$PUBLIC_SSH_KEY" | cut -c1-40
-
       - name: Terraform Init
-        run: |
-          cd ./env/${{ matrix.environment }}
-          terraform init
+        run: terraform init
 
       - name: Terraform Validate
-        run: |
-          cd ./env/${{ matrix.environment }}
-          terraform validate
+        run: terraform validate
 
       - name: Terraform Plan
         run: |
-          cd ./env/${{ matrix.environment }}
           terraform plan -out=tfplan \
             -var="client_id=$ARM_CLIENT_ID" \
             -var="client_secret=$ARM_CLIENT_SECRET" \
             -var="tenant_id=$ARM_TENANT_ID" \
             -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
-            -var="vm_public_key=$PUBLIC_SSH_KEY" \
-            -var-file="terraform.tfvars"
+            -var="vm_public_key=$PUBLIC_SSH_KEY"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: |
-          cd ./env/${{ matrix.environment }}
-          terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
