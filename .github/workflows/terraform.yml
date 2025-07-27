@@ -27,6 +27,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Print current working directory
+        run: pwd
+
+      - name: List working directory contents
+        run: ls -l
+
+      - name: List env folder contents
+        run: ls -l ./envs/${{ matrix.env }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
