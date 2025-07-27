@@ -8,6 +8,8 @@ provider "azurerm" {
   use_cli         = false
 }
 
+
+
 # Use the vnet module
 module "vnet" {
   source              = "../../modules/vnet"
