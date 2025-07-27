@@ -19,33 +19,29 @@ jobs:
       matrix:
         env: [dev, test, prod]
 
-    defaults:
-      run:
-        working-directory: ./envs/${{ matrix.env }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Print current working directory
-        run: pwd
-
-      - name: List working directory contents
+      - name: List repo root contents
         run: ls -l
 
-      - name: List env folder contents
-        run: ls -l ./envs/${{ matrix.env }}
+      - name: List env folder contents for ${{ matrix.env }}
+        run: ls -l envs/${{ matrix.env }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
+        working-directory: envs/${{ matrix.env }}
         run: terraform init
 
       - name: Terraform Validate
+        working-directory: envs/${{ matrix.env }}
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: envs/${{ matrix.env }}
         run: |
           terraform plan -var-file="terraform.tfvars" -out=tfplan \
             -var="client_id=$ARM_CLIENT_ID" \
@@ -56,4 +52,5 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
+        working-directory: envs/${{ matrix.env }}
         run: terraform apply -auto-approve tfplan
